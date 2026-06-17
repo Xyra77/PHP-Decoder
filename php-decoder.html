@@ -1,0 +1,1240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PHPDecoder Pro</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;600;700&family=Orbitron:wght@600;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#070b0e;--surface:#0c1217;--panel:#101820;--panel2:#131e28;--border:#1c2e3e;--border2:#243848;--accent:#005cf0;--accent2:#f000a4;--accent3:#3fff35;--warn:#ffc300;--danger:#ff2d55;--purple:#b06bff;--text:#c0dcea;--text2:#7a9cb0;--muted:#3e5a70;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--text);font-family:'JetBrains Mono',monospace;font-size:12.5px;min-height:100vh;padding-bottom:52px;background-image:radial-gradient(ellipse 80% 50% at 50% -20%,rgba(0,200,240,0.06),transparent);}
+body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(0,200,240,0.025) 1px,transparent 1px),linear-gradient(90deg,rgba(0,200,240,0.025) 1px,transparent 1px);background-size:48px 48px;pointer-events:none;z-index:0;}
+.scan{position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.05) 2px,rgba(0,0,0,0.05) 4px);pointer-events:none;z-index:999;}
+.wrap{position:relative;z-index:1;max-width:1160px;margin:0 auto;padding:24px 20px;}
+header{text-align:center;margin-bottom:28px;padding-bottom:22px;border-bottom:1px solid var(--border);position:relative;}
+header::after{content:'';position:absolute;bottom:-1px;left:50%;transform:translateX(-50%);width:300px;height:1px;background:linear-gradient(90deg,transparent,var(--accent),transparent);box-shadow:0 0 16px var(--accent);}
+.logo{font-family:'Orbitron',monospace;font-size:22px;font-weight:800;letter-spacing:5px;color:var(--accent);text-shadow:0 0 32px rgba(0,200,240,0.6),0 0 60px rgba(0,200,240,0.2);margin-bottom:7px;}
+.logo span{color:var(--accent2);}
+.sub{color:var(--text2);font-size:10px;letter-spacing:2px;text-transform:uppercase;margin-bottom:2px;}
+.brow{display:flex;justify-content:center;gap:8px;margin-top:10px;flex-wrap:wrap;}
+.bdg{font-size:9px;padding:2px 8px;border-radius:10px;border:1px solid;letter-spacing:1px;text-transform:uppercase;}
+.bdg-b{border-color:rgba(0,200,240,0.3);color:var(--accent);background:rgba(0,200,240,0.06);}
+.bdg-g{border-color:rgba(0,240,154,0.3);color:var(--accent2);background:rgba(0,240,154,0.06);}
+.bdg-o{border-color:rgba(255,107,53,0.3);color:var(--accent3);background:rgba(255,107,53,0.06);}
+.bdg-p{border-color:rgba(176,107,255,0.3);color:var(--purple);background:rgba(176,107,255,0.06);}
+.tabs{display:flex;gap:2px;margin-bottom:20px;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:5px;}
+.tab{flex:1;padding:10px 4px;text-align:center;cursor:pointer;border-radius:7px;font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--muted);transition:all 0.2s;border:1px solid transparent;}
+.tab:hover{color:var(--text2);background:var(--panel);}
+.tab.on{background:linear-gradient(135deg,var(--panel2),rgba(0,200,240,0.06));border-color:var(--border2);color:var(--accent);box-shadow:0 0 16px rgba(0,200,240,0.1),inset 0 1px 0 rgba(0,200,240,0.1);}
+.ticon{display:block;font-size:14px;margin-bottom:3px;}
+.pg{display:none;}.pg.on{display:block;}
+.dropzone{border:2px dashed var(--border2);border-radius:8px;padding:28px;text-align:center;cursor:pointer;transition:all 0.2s;margin-bottom:14px;background:var(--surface);}
+.dropzone:hover,.dropzone.drag{border-color:var(--accent);background:rgba(0,200,240,0.04);box-shadow:0 0 20px rgba(0,200,240,0.08);}
+.dropzone.drag{border-style:solid;}
+.di{font-size:28px;margin-bottom:8px;display:block;}
+.dt{font-size:12px;color:var(--text2);margin-bottom:3px;}
+.ds{font-size:10px;color:var(--muted);}
+.dfi{display:none;margin-top:6px;font-size:11px;color:var(--accent2);}
+#file-input{display:none;}
+.det-box{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:14px 16px;margin-bottom:14px;}
+.det-title{font-family:'Orbitron',monospace;font-size:10px;letter-spacing:2px;color:var(--accent3);margin-bottom:10px;}
+.det-res{display:none;}
+.det-layers{display:flex;flex-direction:column;gap:5px;margin-bottom:10px;}
+.dli{display:flex;align-items:center;gap:9px;padding:7px 11px;background:var(--panel);border:1px solid var(--border);border-radius:5px;}
+.dli.hit{border-color:var(--accent2);background:rgba(0,240,154,0.04);}
+.dln{width:20px;height:20px;border-radius:50%;border:1px solid var(--muted);display:flex;align-items:center;justify-content:center;font-size:9px;color:var(--muted);flex-shrink:0;}
+.dli.hit .dln{border-color:var(--accent2);color:var(--accent2);}
+.dll{font-size:10.5px;color:var(--text2);flex:1;}
+.dli.hit .dll{color:var(--text);}
+.dlc{font-size:9px;padding:2px 6px;border-radius:3px;background:rgba(0,240,154,0.1);color:var(--accent2);border:1px solid rgba(0,240,154,0.2);}
+.pipeline{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:12px 14px;margin-bottom:18px;}
+.pltitle{font-family:'Orbitron',monospace;font-size:10px;letter-spacing:2px;color:var(--accent3);margin-bottom:9px;}
+.plsteps{display:flex;align-items:center;flex-wrap:wrap;gap:0;row-gap:7px;}
+.ps{padding:4px 10px;background:var(--panel);border:1px solid var(--border);border-radius:3px;font-size:9px;color:var(--muted);letter-spacing:1px;transition:all 0.2s;}
+.ps.act{border-color:var(--accent);color:var(--accent);background:rgba(0,200,240,0.08);box-shadow:0 0 8px rgba(0,200,240,0.2);}
+.ps.done{border-color:var(--accent2);color:var(--accent2);background:rgba(0,240,154,0.06);}
+.pa{color:var(--border2);font-size:12px;padding:0 3px;}
+.layers{display:flex;flex-direction:column;gap:9px;}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:8px;overflow:hidden;transition:border-color 0.2s,box-shadow 0.2s;}
+.card.active{border-color:var(--accent);box-shadow:0 0 18px rgba(0,200,240,0.1);}
+.card.done{border-color:var(--accent2);box-shadow:0 0 12px rgba(0,240,154,0.08);}
+.card.err{border-color:var(--danger);}
+.card-head{display:flex;align-items:center;gap:9px;padding:10px 13px;background:var(--panel);cursor:pointer;user-select:none;}
+.card-head:hover{background:var(--panel2);}
+.cn{width:23px;height:23px;border-radius:50%;border:1px solid var(--accent);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:var(--accent);flex-shrink:0;}
+.done .cn{background:var(--accent2);border-color:var(--accent2);color:#000;}
+.err .cn{background:var(--danger);border-color:var(--danger);color:#fff;}
+.ct{flex:1;font-weight:600;color:#8abcd0;font-size:11px;letter-spacing:0.4px;}
+.cm{font-size:9px;padding:2px 7px;border-radius:3px;background:rgba(0,200,240,0.08);color:var(--accent);border:1px solid rgba(0,200,240,0.2);letter-spacing:1px;}
+.cv{color:var(--muted);font-size:14px;transition:transform 0.2s;margin-left:3px;}
+.card.open .cv{transform:rotate(180deg);}
+.card-body{padding:12px 13px;display:none;border-top:1px solid var(--border);}
+.card.open .card-body{display:block;}
+label{display:block;font-size:9.5px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:5px;}
+textarea,input[type=text]{width:100%;background:var(--bg);border:1px solid var(--border);border-radius:5px;color:var(--text);font-family:'JetBrains Mono',monospace;font-size:11.5px;padding:8px 10px;outline:none;transition:border-color 0.2s;line-height:1.65;}
+textarea{resize:vertical;min-height:74px;}
+textarea:focus,input[type=text]:focus{border-color:var(--accent);box-shadow:0 0 0 2px rgba(0,200,240,0.07);}
+.br{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap;}
+.btn{padding:7px 14px;border-radius:5px;border:none;cursor:pointer;font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700;letter-spacing:1px;transition:all 0.15s;text-transform:uppercase;}
+.bp{background:linear-gradient(135deg,var(--accent),#0099cc);color:#000;}.bp:hover{background:linear-gradient(135deg,#22d8ff,var(--accent));box-shadow:0 0 18px rgba(0,200,240,0.45);}
+.bs{background:transparent;border:1px solid var(--border2);color:var(--muted);}.bs:hover{border-color:var(--accent);color:var(--accent);background:rgba(0,200,240,0.04);}
+.bg{background:linear-gradient(135deg,var(--accent2),#00bb77);color:#000;}.bg:hover{background:linear-gradient(135deg,#22ffaa,var(--accent2));box-shadow:0 0 18px rgba(0,240,154,0.45);}
+.bo{background:transparent;border:1px solid var(--accent3);color:var(--accent3);}.bo:hover{background:rgba(255,107,53,0.12);box-shadow:0 0 14px rgba(255,107,53,0.2);}
+.bpp{background:linear-gradient(135deg,var(--purple),#8844cc);color:#fff;}.bpp:hover{background:linear-gradient(135deg,#c07fff,var(--purple));box-shadow:0 0 18px rgba(176,107,255,0.4);}
+.cbtn{font-size:9px;padding:2px 7px;background:transparent;border:1px solid var(--border2);color:var(--muted);border-radius:3px;cursor:pointer;font-family:inherit;transition:all 0.15s;}
+.cbtn:hover{border-color:var(--accent2);color:var(--accent2);}
+.ol{display:flex;align-items:center;justify-content:space-between;margin-top:10px;margin-bottom:5px;}
+.outbox{background:var(--bg);border:1px solid var(--border);border-radius:5px;padding:8px 10px;min-height:46px;max-height:280px;overflow-y:auto;font-size:11.5px;line-height:1.65;white-space:pre-wrap;word-break:break-all;color:var(--accent2);}
+.outbox.err{color:var(--danger);border-color:rgba(255,45,85,0.3);}
+.codeout{background:var(--bg);border:1px solid var(--border);border-radius:5px;padding:8px 10px;min-height:46px;max-height:480px;overflow:auto;font-size:11.5px;line-height:1.65;white-space:pre;}
+.info{background:rgba(0,200,240,0.04);border:1px solid rgba(0,200,240,0.12);border-radius:5px;padding:8px 10px;font-size:10.5px;color:var(--text2);margin-bottom:10px;line-height:1.7;}
+.info span{color:var(--accent);}.info b{color:var(--text);}
+.sk{color:#7ec8e3;font-weight:600;}.sf{color:#dda0dd;}.ss{color:#98d982;}.sc{color:#9db8c8;font-style:italic;}.sv{color:#ffb347;}.sn{color:#b5d8ff;}
+.sd{color:var(--danger);font-weight:700;background:rgba(255,45,85,0.12);border-radius:2px;padding:0 2px;}
+.sw{color:var(--warn);font-weight:600;background:rgba(255,195,0,0.08);border-radius:2px;padding:0 2px;}
+.vc{background:var(--panel);border:1px solid var(--border);border-radius:5px;padding:8px 10px;display:flex;align-items:flex-start;gap:8px;transition:all 0.15s;}
+.vc:hover{border-color:var(--accent);}
+.vn{color:var(--accent);font-weight:700;font-size:11px;white-space:nowrap;flex-shrink:0;}
+.vp{color:var(--muted);font-size:10px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;min-width:0;}
+.va{display:flex;gap:5px;flex-shrink:0;}
+.tpanel{background:var(--surface);border:1px solid var(--border);border-radius:8px;overflow:hidden;}
+.tph{padding:11px 14px;background:var(--panel);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:9px;}
+.tptitle{font-family:'Orbitron',monospace;font-size:11px;letter-spacing:2px;color:var(--danger);}
+.tpcount{font-size:10px;padding:2px 7px;border-radius:10px;background:rgba(255,45,85,0.15);color:var(--danger);border:1px solid rgba(255,45,85,0.3);}
+.tpbody{padding:13px 14px;}
+.tcats{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:9px;margin-bottom:13px;}
+.tcat{background:var(--panel);border:1px solid var(--border);border-radius:5px;padding:9px 11px;}
+.tcatn{font-size:9px;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:7px;}
+.tcat.red .tcatn{color:var(--danger);}.tcat.yellow .tcatn{color:var(--warn);}.tcat.cyan .tcatn{color:var(--accent);}.tcat.purple .tcatn{color:var(--purple);}
+.tcatitems{display:flex;flex-wrap:wrap;gap:4px;}
+.ti{font-size:9.5px;padding:2px 6px;border-radius:3px;font-weight:600;}
+.ti.r{background:rgba(255,45,85,0.15);color:var(--danger);border:1px solid rgba(255,45,85,0.25);}
+.ti.y{background:rgba(255,195,0,0.12);color:var(--warn);border:1px solid rgba(255,195,0,0.2);}
+.ti.c{background:rgba(0,200,240,0.08);color:var(--accent);border:1px solid rgba(0,200,240,0.18);}
+.ti.p{background:rgba(176,107,255,0.12);color:var(--purple);border:1px solid rgba(176,107,255,0.2);}
+.scanres{margin-top:11px;}
+.si2{display:flex;align-items:flex-start;gap:9px;padding:7px 11px;border-radius:5px;margin-bottom:5px;border:1px solid;}
+.si2.crit{background:rgba(255,45,85,0.07);border-color:rgba(255,45,85,0.2);}
+.si2.warn{background:rgba(255,195,0,0.06);border-color:rgba(255,195,0,0.2);}
+.si2.info{background:rgba(0,200,240,0.05);border-color:rgba(0,200,240,0.15);}
+.sisev{font-size:9px;padding:2px 6px;border-radius:3px;font-weight:700;flex-shrink:0;white-space:nowrap;}
+.sisev.crit{background:rgba(255,45,85,0.2);color:var(--danger);}
+.sisev.warn{background:rgba(255,195,0,0.15);color:var(--warn);}
+.sisev.info{background:rgba(0,200,240,0.1);color:var(--accent);}
+.sibody{flex:1;min-width:0;}
+.sifn{font-size:11px;color:var(--text);font-weight:600;}
+.sidesc{font-size:10px;color:var(--text2);margin-top:2px;}
+.sicnt{font-size:9px;color:var(--muted);white-space:nowrap;}
+.expbox{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:13px 14px;margin-bottom:12px;}
+.exptitle{font-family:'Orbitron',monospace;font-size:10px;letter-spacing:2px;color:var(--accent2);margin-bottom:9px;}
+.gfblock{background:var(--panel);border:1px solid var(--border);border-radius:4px;padding:5px 9px;font-size:11px;margin-bottom:4px;}
+.gflabel{font-size:9px;color:var(--purple);letter-spacing:1px;margin-bottom:3px;}
+.gfblock pre{white-space:pre-wrap;word-break:break-all;color:var(--text2);font-size:10.5px;line-height:1.5;}
+.statusbar{position:fixed;bottom:0;left:0;right:0;background:var(--panel);border-top:1px solid var(--border);padding:5px 20px;display:flex;gap:16px;font-size:9.5px;color:var(--muted);letter-spacing:1px;z-index:100;}
+.sti{display:flex;align-items:center;gap:5px;}
+.dot{width:5px;height:5px;border-radius:50%;background:var(--muted);}
+.dot.on{background:var(--accent2);box-shadow:0 0 5px var(--accent2);animation:pulse 2s infinite;}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.4}}
+hr.dv{border:none;border-top:1px solid var(--border);margin:11px 0;}
+</style>
+</head>
+<body>
+<div class="scan"></div>
+<div class="wrap">
+<header>
+  <div class="logo">PHP<span>DECODER</span> <span style="color:var(--accent3);font-size:14px">PRO</span></div>
+  <div class="sub">Obfuscated Shell Analysis &middot; Multi-Layer Decoder &middot; Threat Scanner</div>
+  <div class="brow">
+    <span class="bdg bdg-g">&#10003; Auto-Detect</span>
+    <span class="bdg bdg-b">&#10003; Goto Resolver</span>
+    <span class="bdg bdg-o">&#10003; Threat Scanner</span>
+    <span class="bdg bdg-p">&#10003; Drag &amp; Drop + Export</span>
+  </div>
+</header>
+
+<div class="tabs">
+  <div class="tab on" onclick="showTab('t-decode')" id="tab-decode"><span class="ticon">&#9889;</span>DECODE</div>
+  <div class="tab" onclick="showTab('t-goto')" id="tab-goto"><span class="ticon">&#8617;</span>GOTO RESOLVER</div>
+  <div class="tab" onclick="showTab('t-threat')" id="tab-threat"><span class="ticon">&#128683;</span>THREAT SCAN</div>
+  <div class="tab" onclick="showTab('t-export')" id="tab-export"><span class="ticon">&#128196;</span>EXPORT</div>
+</div>
+
+<!-- DECODE -->
+<div class="pg on" id="t-decode">
+  <div class="dropzone" id="dropzone" onclick="document.getElementById('file-input').click()">
+    <span class="di">&#128196;</span>
+    <div class="dt">Drag &amp; drop PHP file here, or click to browse</div>
+    <div class="ds">Supports .php, .txt &mdash; encoding auto-detected</div>
+    <div class="dfi" id="drop-info"></div>
+  </div>
+  <input type="file" id="file-input" accept=".php,.txt,.phtml,.php5,.inc">
+
+  <div class="det-box">
+    <div class="det-title">&#9656; AUTO-DETECT ENCODING LAYERS</div>
+    <textarea id="detect-input" style="min-height:56px;margin-bottom:8px" placeholder="Paste code or load a file..."></textarea>
+    <div class="br">
+      <button class="btn bp" onclick="autoDetect()">&#128269; AUTO ANALYZE</button>
+      <button class="btn bs" onclick="document.getElementById('detect-input').value='';document.getElementById('det-res').style.display='none'">CLEAR</button>
+      <button class="btn bg" onclick="applyDetected()">&#9889; RUN ALL LAYERS</button>
+    </div>
+    <div id="det-res" class="det-res">
+      <hr class="dv">
+      <label>DETECTED LAYERS</label>
+      <div class="det-layers" id="det-layers"></div>
+      <div id="det-summary" style="font-size:10.5px;color:var(--text2)"></div>
+    </div>
+  </div>
+
+  <div class="pipeline">
+    <div class="pltitle">&#9656; PIPELINE</div>
+    <div class="plsteps">
+      <div class="ps" id="ps1">1&middot;B64</div><div class="pa">&#8594;</div>
+      <div class="ps" id="ps2">2&middot;ESC</div><div class="pa">&#8594;</div>
+      <div class="ps" id="ps3">3&middot;SRCH</div><div class="pa">&#8594;</div>
+      <div class="ps" id="ps4">4&middot;ROT13</div><div class="pa">&#8594;</div>
+      <div class="ps" id="ps5">5&middot;B64</div><div class="pa">&#8594;</div>
+      <div class="ps" id="ps6">6&middot;GZ</div><div class="pa">&#8594;</div>
+      <div class="ps" id="ps7">DONE</div>
+    </div>
+  </div>
+
+  <div class="layers">
+    <div class="card open" id="c1">
+      <div class="card-head" onclick="toggle('c1')">
+        <div class="cn" id="n1">1</div><div class="ct">BASE64 DECODE &mdash; Unlock $x77</div>
+        <div class="cm">base64</div><div class="cv">&#9660;</div>
+      </div>
+      <div class="card-body">
+        <div class="info">Paste the base64 string from <span>$x77</span>. Password <span>nanali</span> &#8594; <span>"x77"</span>.</div>
+        <label>INPUT</label>
+        <textarea id="i1" placeholder="CiBnb3RvIHhYVUx3..."></textarea>
+        <div class="br">
+          <button class="btn bp" onclick="layer1()">&#9889; DECODE</button>
+          <button class="btn bs" onclick="clearIO('i1','o1')">CLEAR</button>
+          <button class="btn bs" onclick="loadSample1()">SAMPLE</button>
+        </div>
+        <div class="ol"><label style="margin:0">OUTPUT</label><button class="cbtn" onclick="pipeTo('o1','i2','c2')">Copy &#8594; L2</button></div>
+        <div class="outbox" id="o1">&#8212;</div>
+      </div>
+    </div>
+
+    <div class="card" id="c2">
+      <div class="card-head" onclick="toggle('c2')">
+        <div class="cn" id="n2">2</div><div class="ct">UNESCAPE OCTAL + HEX</div>
+        <div class="cm">octal/hex</div><div class="cv">&#9660;</div>
+      </div>
+      <div class="card-body">
+        <div class="info"><span>\151\156</span> &#8594; <b>in</b> &nbsp;|&nbsp; <span>\x5f\x67</span> &#8594; <b>_g</b> &nbsp;|&nbsp; Example: <span>\151\156\x69\x5f\x67\145\164</span> = <b>ini_get</b></div>
+        <label>INPUT</label>
+        <textarea id="i2" placeholder='echo "\151\156\x69\x5f\x67\145\164";'></textarea>
+        <div class="br">
+          <button class="btn bp" onclick="layer2()">&#9889; UNESCAPE</button>
+          <button class="btn bs" onclick="clearIO('i2','o2')">CLEAR</button>
+          <button class="btn bs" onclick="loadSample2()">SAMPLE</button>
+        </div>
+        <div class="ol"><label style="margin:0">OUTPUT</label><button class="cbtn" onclick="pipeTo('o2','i3','c3')">Copy &#8594; L3</button></div>
+        <div class="outbox" id="o2">&#8212;</div>
+      </div>
+    </div>
+
+    <div class="card" id="c3">
+      <div class="card-head" onclick="toggle('c3')">
+        <div class="cn" id="n3">3</div><div class="ct">SEARCH &mdash; Find $bypass_root &amp; Other Variables</div>
+        <div class="cm">search</div><div class="cv">&#9660;</div>
+      </div>
+      <div class="card-body">
+        <div class="info">Paste decoded PHP code. Click <span>&#8594; PIPELINE</span> to send directly to Layer 6.</div>
+        <label>INPUT &mdash; PHP Code</label>
+        <textarea id="i3" style="min-height:90px" placeholder="Paste PHP code here..."></textarea>
+        <div class="br">
+          <button class="btn bp" onclick="searchTarget('bypass_root')">&#128269; FIND $bypass_root</button>
+          <button class="btn bo" onclick="searchAll()">&#128269; ALL VARIABLES</button>
+          <button class="btn bs" onclick="toggleCustom()">&#128269; CUSTOM</button>
+          <button class="btn bs" onclick="clearSearch()">CLEAR</button>
+        </div>
+        <div id="custom-row" style="display:none;margin-top:8px">
+          <label>VARIABLE NAME (without $)</label>
+          <div style="display:flex;gap:6px">
+            <input type="text" id="custom-var" placeholder="bypass_root" style="flex:1;min-height:auto;padding:6px 10px">
+            <button class="btn bp" onclick="searchCustom()" style="white-space:nowrap">SEARCH</button>
+          </div>
+        </div>
+        <div class="ol"><label style="margin:0">RESULTS</label><button class="cbtn" onclick="copyOutTxt('o3')">Copy</button></div>
+        <div class="outbox" id="o3">&#8212;</div>
+        <div id="var-results" style="display:none;margin-top:10px">
+          <label>FOUND</label>
+          <div id="var-list" style="display:flex;flex-direction:column;gap:5px;margin-top:5px"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" id="c4">
+      <div class="card-head" onclick="toggle('c4')">
+        <div class="cn" id="n4">4</div><div class="ct">ROT13 &mdash; $bypass_root Step 1</div>
+        <div class="cm">str_rot13</div><div class="cv">&#9660;</div>
+      </div>
+      <div class="card-body">
+        <div class="info">Paste <span>$bypass_root</span>, or use <span>&#8594; PIPELINE</span> from Layer 3.</div>
+        <label>INPUT</label><textarea id="i4" placeholder="Paste isi $bypass_root..."></textarea>
+        <div class="br">
+          <button class="btn bp" onclick="layer4()">&#9889; ROT13</button>
+          <button class="btn bs" onclick="clearIO('i4','o4')">CLEAR</button>
+        </div>
+        <div class="ol"><label style="margin:0">OUTPUT</label><button class="cbtn" onclick="pipeTo('o4','i5','c5')">Copy &#8594; L5</button></div>
+        <div class="outbox" id="o4">&#8212;</div>
+      </div>
+    </div>
+
+    <div class="card" id="c5">
+      <div class="card-head" onclick="toggle('c5')">
+        <div class="cn" id="n5">5</div><div class="ct">BASE64 DECODE &mdash; $bypass_root Step 2</div>
+        <div class="cm">base64</div><div class="cv">&#9660;</div>
+      </div>
+      <div class="card-body">
+        <div class="info">Base64 decode after ROT13. Output is binary data.</div>
+        <label>INPUT</label><textarea id="i5" placeholder="Paste output from Layer 4..."></textarea>
+        <div class="br">
+          <button class="btn bp" onclick="layer5()">&#9889; DECODE</button>
+          <button class="btn bs" onclick="clearIO('i5','o5')">CLEAR</button>
+        </div>
+        <div class="ol"><label style="margin:0">OUTPUT (binary preview)</label></div>
+        <div class="outbox" id="o5">&#8212;</div>
+      </div>
+    </div>
+
+    <div class="card" id="c6">
+      <div class="card-head" onclick="toggle('c6')">
+        <div class="cn" id="n6">6</div><div class="ct">GZINFLATE &mdash; Auto Pipeline + Syntax Highlight</div>
+        <div class="cm">gzinflate</div><div class="cv">&#9660;</div>
+      </div>
+      <div class="card-body">
+        <div class="info">Paste <span>$bypass_root</span> directly &#8594; click <span>AUTO PIPELINE</span>. Output is highlighted &amp; ready to scan.</div>
+        <label>INPUT &mdash; $bypass_root value</label>
+        <textarea id="i6" placeholder="Paste $bypass_root or send via PIPELINE from Layer 3..."></textarea>
+        <div class="br">
+          <button class="btn bg" onclick="autoPipeline()">&#128640; AUTO PIPELINE</button>
+          <button class="btn bs" onclick="document.getElementById('i6').value='';document.getElementById('o6h').innerHTML='&#8212;'">CLEAR</button>
+        </div>
+        <div class="ol">
+          <label style="margin:0">FINAL OUTPUT &mdash; Syntax Highlighted</label>
+          <div style="display:flex;gap:5px">
+            <button class="cbtn" onclick="copyInnerText('o6h')">Copy</button>
+            <button class="cbtn" onclick="sendToThreat()">&#128683; Scan</button>
+            <button class="cbtn" onclick="sendToGoto()">&#8617; Goto</button>
+          </div>
+        </div>
+        <div class="codeout" id="o6h" style="min-height:46px">&#8212;</div>
+      </div>
+    </div>
+
+    <div class="card" id="c7">
+      <div class="card-head" onclick="toggle('c7')">
+        <div class="cn" id="n7">7</div><div class="ct">QUICK UNESCAPE &mdash; Decode Single String</div>
+        <div class="cm">utility</div><div class="cv">&#9660;</div>
+      </div>
+      <div class="card-body">
+        <div class="info">Decode a single escape string. Press Enter to submit.</div>
+        <input type="text" id="i7" placeholder='"\74\x61\40\x63\x6c\141\x73\x73..."'>
+        <div class="br">
+          <button class="btn bp" onclick="layer7()">&#9889; DECODE</button>
+          <button class="btn bs" onclick="document.getElementById('i7').value='';setOut('o7','&#8212;')">CLEAR</button>
+        </div>
+        <div class="ol"><label style="margin:0">OUTPUT</label><button class="cbtn" onclick="copyOutTxt('o7')">Copy</button></div>
+        <div class="outbox" id="o7">&#8212;</div>
+      </div>
+    </div>
+
+    <!-- L8 ASSEMBLE -->
+    <div class="card" id="c8" style="border-color:var(--purple);box-shadow:0 0 18px rgba(176,107,255,0.08)">
+      <div class="card-head" onclick="toggle('c8')" style="background:rgba(176,107,255,0.06)">
+        <div class="cn" id="n8" style="border-color:var(--purple);color:var(--purple)">8</div>
+        <div class="ct" style="color:#c8a0f0">ASSEMBLE FINAL CODE &mdash; Merge &amp; Resolve All Variables</div>
+        <div class="cm" style="color:var(--purple);border-color:rgba(176,107,255,0.3);background:rgba(176,107,255,0.08)">merge</div>
+        <div class="cv">&#9660;</div>
+      </div>
+      <div class="card-body">
+        <div class="info" style="border-color:rgba(176,107,255,0.2);background:rgba(176,107,255,0.04)">
+          Pulls all variables from <span>Layer 3</span> (search results) + code from <span>Layer 2</span> + payload from <span>Layer 6</span>.<br>
+          Tool will <b>substitute all variable values</b> into the code &mdash; <code style="color:var(--accent)">{$dirc}</code>, <code style="color:var(--accent)">{$user}</code>, etc. are replaced with their actual values.
+        </div>
+
+        <!-- Quick pull buttons -->
+        <div class="br" style="margin-bottom:12px">
+          <button class="btn bpp" onclick="pullAllFromLayer3()">&#8593; PULL ALL VARIABLES FROM LAYER 3</button>
+          <button class="cbtn" onclick="pullFromLayer('o2','ia-l2')">&#8593; Pull Layer 2 code</button>
+          <button class="cbtn" onclick="pullFromLayerCode('o6h','ia-l6')">&#8593; Pull Layer 6 payload</button>
+        </div>
+
+        <!-- Var preview table -->
+        <div id="assemble-vars" style="display:none;margin-bottom:10px">
+          <label>VARIABLES FROM LAYER 3 &mdash; Will be substituted</label>
+          <div id="var-table" style="margin-top:5px;display:flex;flex-direction:column;gap:3px;max-height:200px;overflow-y:auto"></div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">
+          <div>
+            <label>INPUT A &mdash; Code from Layer 2 (base code)</label>
+            <textarea id="ia-l2" style="min-height:70px" placeholder="Paste Layer 2 output or click the button above..."></textarea>
+          </div>
+          <div>
+            <label>INPUT B &mdash; Payload from Layer 6 ($bypass_root)</label>
+            <textarea id="ia-l6" style="min-height:70px" placeholder="Paste Layer 6 output or click the button above..."></textarea>
+          </div>
+        </div>
+        <div class="br">
+          <button class="btn bpp" onclick="assembleCode()">&#9889; ASSEMBLE &amp; SUBSTITUTE ALL VARIABLES</button>
+          <button class="btn bs" onclick="clearAssemble()">CLEAR</button>
+        </div>
+        <div class="ol" style="margin-top:14px">
+          <label style="margin:0">OUTPUT &mdash; FINAL ASSEMBLED PHP</label>
+          <div style="display:flex;gap:5px">
+            <button class="cbtn" onclick="copyInnerText('o8')">Copy</button>
+            <button class="cbtn" onclick="sendAssembledToThreat()">&#128683; Scan</button>
+            <button class="cbtn" onclick="sendAssembledToGoto()">&#8617; Goto</button>
+          </div>
+        </div>
+        <div class="codeout" id="o8" style="min-height:60px;max-height:500px">&#8212;</div>
+      </div>
+    </div>
+
+  </div>
+  <div style="text-align:center;margin-top:18px;padding-bottom:8px">
+    <span style="font-size:14px;color:var(--muted);letter-spacing:0.06em"><span style="color:var(--accent3);letter-spacing:1px">PHPDecoder</span><span style="color:var(--accent);font-weight:800;letter-spacing:2px;font-family:'Orbitron',monospace"> PRO</span> &nbsp;<span style="color:var(--border2)">|</span>&nbsp; <span style="color:var(--muted)">by</span> <span style="color:var(--accent2);font-weight:700">Xyra77</span></span>
+  </div>
+</div>
+
+<!-- GOTO -->
+<div class="pg" id="t-goto">
+  <div class="card open" id="c-goto">
+    <div class="card-head" onclick="toggle('c-goto')">
+      <div class="cn">&#8617;</div><div class="ct">GOTO OBFUSCATION RESOLVER</div>
+      <div class="cm">control flow</div><div class="cv">&#9660;</div>
+    </div>
+    <div class="card-body">
+      <div class="info">Paste PHP code with <span>goto</span>. Tool will reorder blocks according to execution flow and remove unnecessary labels.</div>
+      <label>INPUT &mdash; PHP with goto</label>
+      <textarea id="goto-in" style="min-height:110px" placeholder="goto xXULw;&#10;O6EgG: $x = 1; goto end;&#10;xXULw: echo 'start'; goto O6EgG;&#10;end: echo 'done';"></textarea>
+      <div class="br">
+        <button class="btn bp" onclick="resolveGoto()">&#8617; RESOLVE GOTO</button>
+        <button class="btn bs" onclick="document.getElementById('goto-in').value='';document.getElementById('goto-code').innerHTML='';document.getElementById('goto-flow').innerHTML='';document.getElementById('goto-code').style.display='none'">CLEAR</button>
+        <button class="btn bs" onclick="loadGotoSample()">SAMPLE</button>
+        <button class="cbtn" style="margin-left:auto" onclick="copyInnerText('goto-code')">Copy</button>
+      </div>
+      <div class="ol"><label style="margin:0">RESOLVED CODE</label><button class="cbtn" onclick="sendGotoToScan()">&#128683; Scan</button><button class="cbtn" style="margin-left:6px" onclick="downloadGotoAsPhp()">&#8595; .php</button></div>
+      <div class="codeout" id="goto-code" style="min-height:70px;display:none"></div>
+      <div id="goto-flow" style="margin-top:10px"></div>
+    </div>
+  </div>
+  <div style="text-align:center;margin-top:14px;padding-bottom:4px">
+    <span style="font-size:11px;color:var(--muted);letter-spacing:0.08em"><span style="color:var(--accent3);letter-spacing:1px">PHPDecoder</span><span style="color:var(--accent);font-weight:800;font-family:'Orbitron',monospace"> PRO</span> &nbsp;<span style="color:var(--border2)">|</span>&nbsp; <span style="color:var(--muted)">by</span> <span style="color:var(--accent2);font-weight:700">Xyra77</span></span>
+  </div>
+</div>
+
+<!-- THREAT -->
+<div class="pg" id="t-threat">
+  <div class="tpanel">
+    <div class="tph"><div class="tptitle">&#128683; THREAT SCANNER</div><div class="tpcount" id="tcount">0 threats</div></div>
+    <div class="tpbody">
+      <div class="info">Paste decoded PHP for analysis. Dangerous functions are highlighted and categorized by severity.</div>
+      <label>INPUT &mdash; Decoded PHP</label>
+      <textarea id="threat-in" style="min-height:90px" placeholder="Paste decoded PHP code here..."></textarea>
+      <div class="br">
+        <button class="btn bo" onclick="runThreatScan()">&#128683; SCAN NOW</button>
+        <button class="btn bs" onclick="clearThreat()">CLEAR</button>
+      </div>
+      <div id="scan-res" style="display:none">
+        <hr class="dv">
+        <div class="ol"><label style="margin:0">CODE &mdash; Threats Highlighted</label><button class="cbtn" onclick="copyInnerText('threat-hl')">Copy</button></div>
+        <div class="codeout" id="threat-hl" style="max-height:300px;margin-bottom:13px"></div>
+        <label>THREAT REPORT</label>
+        <div class="scanres" id="scan-items"></div>
+      </div>
+      <hr class="dv">
+      <div class="tcats">
+        <div class="tcat red"><div class="tcatn">&#128683; CRITICAL &mdash; Code Exec</div><div class="tcatitems"><span class="ti r">eval()</span><span class="ti r">exec()</span><span class="ti r">system()</span><span class="ti r">passthru()</span><span class="ti r">shell_exec()</span><span class="ti r">popen()</span><span class="ti r">proc_open()</span><span class="ti r">assert()</span></div></div>
+        <div class="tcat yellow"><div class="tcatn">&#9888; HIGH &mdash; Obfuscation</div><div class="tcatitems"><span class="ti y">base64_decode()</span><span class="ti y">gzinflate()</span><span class="ti y">str_rot13()</span><span class="ti y">gzuncompress()</span><span class="ti y">preg_replace()</span><span class="ti y">call_user_func()</span></div></div>
+        <div class="tcat cyan"><div class="tcatn">&#9432; MEDIUM &mdash; File/Net</div><div class="tcatitems"><span class="ti c">file_get_contents()</span><span class="ti c">file_put_contents()</span><span class="ti c">fwrite()</span><span class="ti c">unlink()</span><span class="ti c">curl_exec()</span><span class="ti c">fsockopen()</span></div></div>
+        <div class="tcat purple"><div class="tcatn">&#9675; LOW &mdash; Info Gather</div><div class="tcatitems"><span class="ti p">phpinfo()</span><span class="ti p">ini_get()</span><span class="ti p">$_GET</span><span class="ti p">$_POST</span><span class="ti p">$_FILES</span><span class="ti p">$_COOKIE</span><span class="ti p">$_SERVER</span></div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- EXPORT -->
+<div class="pg" id="t-export">
+  <div class="expbox">
+    <div class="exptitle">&#128196; EXPORT REPORT</div>
+    <div class="info">Generate a full report from all decode results and analysis.</div>
+    <div class="br">
+      <button class="btn bg" onclick="exportHTML()">&#8681; EXPORT HTML</button>
+      <button class="btn bp" onclick="exportTXT()">&#8681; EXPORT TXT</button>
+      <button class="btn bs" onclick="exportJSON()">&#8681; EXPORT JSON</button>
+    </div>
+    <hr class="dv">
+    <label>PREVIEW</label>
+    <div class="outbox" id="exp-preview" style="max-height:380px;color:var(--text2)">No data yet. Run a decode first.</div>
+  </div>
+</div>
+
+</div><!-- wrap -->
+
+<div class="statusbar">
+  <div class="sti"><div class="dot on"></div>READY</div>
+  <div class="sti"><div class="dot"></div>OFFLINE</div>
+  <div class="sti" id="st-chars"><div class="dot"></div>0 CHARS</div>
+  <div class="sti" id="st-layer"><div class="dot"></div>IDLE</div>
+</div>
+
+<script>
+var varStore={};
+var LOG={detectedLayers:[],decoded:{},threats:[],gotoResolved:'',ts:new Date().toISOString()};
+
+function showTab(id){
+  document.querySelectorAll('.pg').forEach(function(p){p.classList.remove('on');});
+  document.querySelectorAll('.tab').forEach(function(t){t.classList.remove('on');});
+  document.getElementById(id).classList.add('on');
+  var tid='tab-'+id.replace('t-','');
+  var tel=document.getElementById(tid);
+  if(tel)tel.classList.add('on');
+  if(id==='t-export')updateExportPreview();
+}
+
+// DRAG DROP
+var dz=document.getElementById('dropzone');
+dz.addEventListener('dragover',function(e){e.preventDefault();dz.classList.add('drag');});
+dz.addEventListener('dragleave',function(){dz.classList.remove('drag');});
+dz.addEventListener('drop',function(e){e.preventDefault();dz.classList.remove('drag');var f=e.dataTransfer.files[0];if(f)loadFile(f);});
+document.getElementById('file-input').addEventListener('change',function(){if(this.files[0])loadFile(this.files[0]);});
+function loadFile(f){
+  var r=new FileReader();
+  r.onload=function(e){
+    var c=e.target.result;
+    ['detect-input','i1','i2','i3'].forEach(function(id){document.getElementById(id).value=c;});
+    document.getElementById('drop-info').textContent='\u2713 '+f.name+' ('+(f.size/1024).toFixed(1)+' KB)';
+    document.getElementById('drop-info').style.display='block';
+    setStat(c.length,'FILE: '+f.name);
+    autoDetect();
+  };
+  r.readAsText(f);
+}
+
+// UTILS
+function toggle(id){document.getElementById(id).classList.toggle('open');}
+function setOut(id,txt,isErr){var el=document.getElementById(id);el.textContent=txt;el.className=isErr?'outbox err':'outbox';}
+function setStat(chars,layer){
+  document.getElementById('st-chars').innerHTML='<div class="dot on"></div>'+chars+' CHARS';
+  document.getElementById('st-layer').innerHTML='<div class="dot on"></div>'+layer;
+}
+function markDone(n){
+  var c=document.getElementById('c'+n);if(!c)return;
+  c.classList.remove('active','err');c.classList.add('done');
+  document.getElementById('n'+n).textContent='\u2713';
+  var ps=document.getElementById('ps'+n);if(ps){ps.classList.remove('act');ps.classList.add('done');}
+}
+function markActive(n){
+  var c=document.getElementById('c'+n);if(!c)return;
+  c.classList.remove('err');c.classList.add('active');
+  var ps=document.getElementById('ps'+n);if(ps)ps.classList.add('act');
+}
+function markErr(n){
+  var c=document.getElementById('c'+n);if(!c)return;
+  c.classList.remove('active','done');c.classList.add('err');
+  document.getElementById('n'+n).textContent='\u2717';
+}
+function clearIO(inId,outId){
+  document.getElementById(inId).value='';
+  var el=document.getElementById(outId);
+  if(el){el.textContent='\u2014';el.className=el.className.indexOf('codeout')>=0?'codeout':'outbox';}
+}
+function clearSearch(){
+  document.getElementById('i3').value='';setOut('o3','\u2014');
+  document.getElementById('var-results').style.display='none';
+  document.getElementById('var-list').innerHTML='';
+}
+function clearThreat(){
+  document.getElementById('threat-in').value='';
+  document.getElementById('scan-res').style.display='none';
+  document.getElementById('tcount').textContent='0 threats';
+}
+function pipeTo(srcId,dstId,cardId){
+  var txt=document.getElementById(srcId).textContent;
+  if(!txt||txt==='\u2014')return;
+  document.getElementById(dstId).value=txt;
+  var card=document.getElementById(cardId);card.classList.add('open');
+  setTimeout(function(){card.scrollIntoView({behavior:'smooth',block:'center'});},50);
+}
+function doCopy(txt, btn) {
+  if (!txt || txt === '\u2014') return;
+  function showOK() {
+    if (!btn) return;
+    var orig = btn.textContent;
+    btn.textContent = '\u2713 Copied!';
+    btn.style.color = 'var(--accent2)';
+    btn.style.borderColor = 'var(--accent2)';
+    setTimeout(function() { btn.textContent = orig; btn.style.color = ''; btn.style.borderColor = ''; }, 1500);
+  }
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(txt).then(showOK).catch(function() { fallbackCopy(txt, showOK); });
+  } else { fallbackCopy(txt, showOK); }
+}
+function fallbackCopy(txt, cb) {
+  var ta = document.createElement('textarea');
+  ta.value = txt;
+  ta.style.cssText = 'position:fixed;top:-9999px;left:-9999px;opacity:0';
+  document.body.appendChild(ta);
+  ta.focus(); ta.select();
+  try { document.execCommand('copy'); if (cb) cb(); } catch(e) {}
+  document.body.removeChild(ta);
+}
+function copyOutTxt(id) { doCopy(document.getElementById(id).textContent, event && event.target); }
+function copyInnerText(id) { var el=document.getElementById(id); doCopy(el.innerText||el.textContent, event && event.target); }
+function toggleCustom(){var r=document.getElementById('custom-row');r.style.display=r.style.display==='none'?'block':'none';}
+function searchCustom(){var n=document.getElementById('custom-var').value.trim().replace(/^\$/,'');if(n)searchTarget(n);}
+
+// PHP UTILS
+function phpUnescape(str){
+  return str.replace(/\\(?:x([0-9a-fA-F]{1,2})|([0-7]{1,3}))/g,function(m,hex,oct){
+    if(hex!==undefined)return String.fromCharCode(parseInt(hex,16));
+    if(oct!==undefined)return String.fromCharCode(parseInt(oct,8));
+    return m;
+  });
+}
+function rot13(str){return str.replace(/[a-zA-Z]/g,function(c){var b=c<='Z'?65:97;return String.fromCharCode(((c.charCodeAt(0)-b+13)%26)+b);});}
+
+// SAMPLES
+function loadSample1(){document.getElementById('i1').value='CiBnb3RvIHhYVUx3OyBPNkVnRzogJGlndCA9ICJcMTUxXDE1NiIgLiAiXDE1MVx4NWZceDY3IiAuICJcMTQ1XDE2NCI7IGdvdG8gb3JrVVI7IERXSmZ6OiBmdW5jdGlvbiBjZWt3cml0ZSgkbG9r';}
+function loadSample2(){document.getElementById('i2').value='goto xXULw;\nO6EgG: $igt = "\\151\\156" . "\\151\\x5f\\x67" . "\\145\\164"; goto orkUR;\nDWJfz: function cekwrite($lok){ echo "\\74\\x66\\x6f\\156\\x74\\40\\143\\x6f\\154\\x6f\\x72\\x3d\\147\\162\\x65\\x65\\x6e\\x3e\\117\\116\\74\\57\\x66\\x6f\\x6e\\164\\76"; }\nxXULw: $isw = "is_writable"; goto O6EgG;\norkUR: goto DWJfz;';}
+function loadGotoSample(){document.getElementById('goto-in').value='goto xXULw;\nO6EgG: $igt = "ini_get"; goto orkUR;\nxXULw: $isw = "is_writable"; goto O6EgG;\norkUR: function cekwrite($lok){ if($isw($lok)){ echo "ON"; } }\ngoto DWJfz;\nDWJfz: echo "done";';}
+
+// AUTO DETECT
+function autoDetect(){
+  var code=document.getElementById('detect-input').value.trim();
+  if(!code)return;
+  var layers=[];
+  var clean=code.replace(/\s/g,'');
+  if(/^[A-Za-z0-9+/]{20,}=*$/.test(clean))layers.push({name:'BASE64',desc:'String appears to be pure base64',conf:'HIGH'});
+  else if(/base64_decode\s*\(/.test(code))layers.push({name:'BASE64',desc:'Contains base64_decode()',conf:'HIGH'});
+  if(/\\[0-7]{1,3}|\\x[0-9a-fA-F]{1,2}/.test(code))layers.push({name:'OCTAL/HEX ESCAPE',desc:'Contains \\151, \\x6f etc.',conf:'HIGH'});
+  if(/\bgoto\b/.test(code)&&/[a-zA-Z0-9_]+\s*:/.test(code))layers.push({name:'GOTO OBFUSCATION',desc:'Contains goto + labels',conf:'HIGH',tab:'t-goto'});
+  if(/str_rot13/.test(code))layers.push({name:'ROT13',desc:'Contains str_rot13()',conf:'HIGH'});
+  if(/gzinflate|gzuncompress|gzdecode/.test(code))layers.push({name:'GZIP INFLATE',desc:'Contains decompress function',conf:'HIGH'});
+  if(/\beval\s*\(/.test(code))layers.push({name:'EVAL EXEC',desc:'eval() detected — payload executed directly',conf:'CRITICAL',tab:'t-threat'});
+  if(/gzinflate.*base64_decode.*str_rot13|str_rot13.*base64_decode.*gzinflate/.test(code.replace(/\s/g,'')))
+    layers.push({name:'MULTI-LAYER COMBO',desc:'rot13+base64+gzinflate combined',conf:'CRITICAL'});
+  LOG.detectedLayers=layers;
+  var el=document.getElementById('det-res');
+  var list=document.getElementById('det-layers');
+  list.innerHTML='';el.style.display='block';
+  if(!layers.length){
+    list.innerHTML='<div style="color:var(--muted);font-size:11px;padding:8px">No encoding detected automatically.</div>';
+    document.getElementById('det-summary').textContent='';return;
+  }
+  layers.forEach(function(l,i){
+    var div=document.createElement('div');div.className='dli hit';
+    var cc=l.conf==='CRITICAL'?'var(--danger)':l.conf==='HIGH'?'var(--accent2)':'var(--warn)';
+    div.innerHTML='<div class="dln">'+(i+1)+'</div><div class="dll"><b>'+l.name+'</b> &mdash; '+l.desc+'</div><div class="dlc" style="border-color:'+cc+';color:'+cc+'">'+l.conf+'</div>';
+    if(l.tab){var btn=document.createElement('button');btn.className='cbtn';btn.textContent='Go';btn.addEventListener('click',(function(t){return function(){showTab(t);};})(l.tab));div.appendChild(btn);}
+    list.appendChild(div);
+  });
+  document.getElementById('det-summary').innerHTML='<span style="color:var(--accent2)">\u2713</span> '+layers.length+' layer(s) detected.';
+  setStat(code.length,layers.length+' LAYERS DETECTED');
+}
+
+function applyDetected(){
+  var code=document.getElementById('detect-input').value.trim();if(!code)return;
+  var layers=LOG.detectedLayers;
+  if(!layers||!layers.length){autoDetect();layers=LOG.detectedLayers;}
+  var hasB64=layers.some(function(l){return l.name==='BASE64';});
+  var hasEsc=layers.some(function(l){return l.name==='OCTAL/HEX ESCAPE';});
+  var hasRot=layers.some(function(l){return l.name==='ROT13';});
+  var hasGzip=layers.some(function(l){return l.name==='GZIP INFLATE';});
+  var cur=code;
+  if(hasB64){try{cur=atob(cur.replace(/\s/g,''));markDone(1);}catch(e){}}
+  if(hasEsc){cur=phpUnescape(cur);markDone(2);}
+  if(hasRot||hasGzip){document.getElementById('i6').value=cur;document.getElementById('c6').classList.add('open');autoPipelineWith(cur);}
+  setStat(cur.length,'AUTO DONE');
+}
+
+// LAYERS
+function layer1(){
+  var inp=document.getElementById('i1').value.trim();if(!inp)return;
+  markActive(1);
+  try{var d=atob(inp.replace(/\s/g,''));setOut('o1',d);LOG.decoded.layer1=d;setStat(d.length,'L1 DONE');markDone(1);}
+  catch(e){setOut('o1','Error: '+e.message,true);markErr(1);}
+}
+function layer2(){
+  var inp=document.getElementById('i2').value;if(!inp)return;
+  markActive(2);var r=phpUnescape(inp);setOut('o2',r);LOG.decoded.layer2=r;setStat(r.length,'L2 DONE');markDone(2);
+}
+function layer4(){
+  var inp=document.getElementById('i4').value.trim();if(!inp)return;
+  markActive(4);var r=rot13(inp);setOut('o4',r);LOG.decoded.layer4=r;setStat(r.length,'L4 ROT13');markDone(4);
+}
+function layer5(){
+  var inp=document.getElementById('i5').value.trim();if(!inp)return;
+  markActive(5);
+  try{
+    var d=atob(inp.replace(/\s/g,''));
+    var pv='';for(var i=0;i<Math.min(48,d.length);i++)pv+=d.charCodeAt(i).toString(16).padStart(2,'0')+' ';
+    setOut('o5','[Binary '+d.length+' bytes]\nHex: '+pv.trim()+'...');setStat(d.length,'L5 DONE');markDone(5);
+  }catch(e){setOut('o5','Error: '+e.message,true);markErr(5);}
+}
+function layer7(){
+  var inp=document.getElementById('i7').value;if(!inp)return;
+  var r=phpUnescape(inp.replace(/^["']|["']$/g,''));setOut('o7',r);setStat(r.length,'QUICK DONE');
+}
+document.getElementById('i7').addEventListener('keydown',function(e){if(e.key==='Enter')layer7();});
+
+// SEARCH
+function searchAll(){
+  var code=document.getElementById('i3').value;if(!code){setOut('o3','Empty input.',true);return;}
+  markActive(3);
+  var pat=/\$([a-zA-Z_][a-zA-Z0-9_]*)\s*=\s*['"]([^'"]{10,})/g;
+  var found={},m;
+  while((m=pat.exec(code))!==null)if(!found[m[1]])found[m[1]]=m[2];
+  var keys=Object.keys(found);
+  if(!keys.length){setOut('o3','No variables with long strings found.',true);markErr(3);return;}
+  setOut('o3','Found '+keys.length+' variable(s):');
+  renderVarCards(keys.map(function(k){return{label:'$'+k,value:found[k]};}));
+  markDone(3);
+}
+function searchTarget(varName){
+  var code=document.getElementById('i3').value;if(!code){setOut('o3','Empty input.',true);return;}
+  markActive(3);
+  var results=[];
+  function addR(val,pos){
+    val=val.trim();
+    for(var j=0;j<results.length;j++)if(results[j].value===val)return;
+    var line=code.substring(0,pos).split('\n').length;
+    results.push({label:'$'+varName+'  [line '+line+']',value:val});
+  }
+  var p1=new RegExp('\\$'+varName+'\\s*=\\s*["\']([^"\']+)["\']','g');
+  var p2=new RegExp('\\$'+varName+'\\s*=\\s*([A-Za-z0-9+/=]{16,})','g');
+  var m;
+  p1.lastIndex=0;while((m=p1.exec(code))!==null)addR(m[1],m.index);
+  p2.lastIndex=0;while((m=p2.exec(code))!==null)addR(m[1],m.index);
+  if(!results.length){
+    var mp=new RegExp('\\$'+varName,'g'),ments=[];
+    while((m=mp.exec(code))!==null){
+      var s=Math.max(0,m.index-20),e2=Math.min(code.length,m.index+60);
+      ments.push('Line '+code.substring(0,m.index).split('\n').length+': ...'+code.substring(s,e2).replace(/\n/g,' ')+'...');
+    }
+    setOut('o3',ments.length?'$'+varName+' found but not in assignment format:\n\n'+ments.join('\n'):'$'+varName+' not found.',!ments.length);
+    if(!ments.length)markErr(3);return;
+  }
+  setOut('o3','Found $'+varName+' — '+results.length+' occurrence(s).');
+  renderVarCards(results);markDone(3);
+}
+function renderVarCards(entries){
+  varStore={};
+  var ct=document.getElementById('var-results');var list=document.getElementById('var-list');
+  list.innerHTML='';ct.style.display='block';
+  entries.forEach(function(entry,idx){
+    var key="v"+idx;varStore[key]=entry.value;varLabelStore[key]={name:entry.label,value:entry.value};
+    var pv=entry.value.length>55?entry.value.substring(0,55)+'...':entry.value;
+    var card=document.createElement('div');card.className='vc';
+    var info=document.createElement('div');info.style.cssText='flex:1;min-width:0';
+    var nm=document.createElement('div');nm.className='vn';nm.textContent=entry.label;
+    var pve=document.createElement('div');pve.className='vp';pve.textContent=pv;
+    info.appendChild(nm);info.appendChild(pve);
+    var ac=document.createElement('div');ac.className='va';
+    var pb=document.createElement('button');pb.className='btn bg';pb.textContent='\u2192 PIPELINE';pb.style.cssText='font-size:9px;padding:3px 9px';
+    pb.addEventListener('click',(function(k){return function(){sendToPipeline(k);};})(key));
+    var cb=document.createElement('button');cb.className='cbtn';cb.textContent='Copy';
+    cb.addEventListener('click',(function(k){return function(){if(navigator.clipboard)navigator.clipboard.writeText(varStore[k]);};})(key));
+    ac.appendChild(pb);ac.appendChild(cb);card.appendChild(info);card.appendChild(ac);list.appendChild(card);
+  });
+}
+function sendToPipeline(key){
+  var val=varStore[key];if(!val)return;
+  document.getElementById('i6').value=val;
+  var c6=document.getElementById('c6');c6.classList.add('open');
+  c6.style.boxShadow='0 0 30px rgba(0,240,154,0.2)';
+  setTimeout(function(){c6.scrollIntoView({behavior:'smooth',block:'center'});},50);
+  setTimeout(function(){c6.style.boxShadow='';},1600);
+}
+
+// PAKO
+var pakoLoaded=false;
+function loadPako(cb){
+  if(pakoLoaded){cb();return;}
+  var s=document.createElement('script');
+  s.src='https://cdnjs.cloudflare.com/ajax/libs/pako/2.1.0/pako_inflate.min.js';
+  s.onload=function(){pakoLoaded=true;cb();};
+  s.onerror=function(){document.getElementById('o6h').textContent='Failed to load inflate library.';};
+  document.head.appendChild(s);
+}
+function autoPipeline(){
+  var inp=document.getElementById('i6').value.trim();
+  if(!inp){document.getElementById('o6h').textContent='Empty input.';return;}
+  autoPipelineWith(inp);
+}
+function autoPipelineWith(inp){
+  markActive(6);document.getElementById('o6h').textContent='Processing ROT13 \u2192 Base64 \u2192 Inflate...';
+  loadPako(function(){
+    try{
+      var s1=rot13(inp.replace(/\s/g,''));var s2=atob(s1);
+      var bytes=new Uint8Array(s2.length);for(var i=0;i<s2.length;i++)bytes[i]=s2.charCodeAt(i);
+      var inf;try{inf=pako.inflateRaw(bytes);}catch(e2){inf=pako.inflate(bytes);}
+      var result=new TextDecoder().decode(inf);
+      LOG.decoded.final=result;
+      document.getElementById('o6h').innerHTML=syntaxHL(result);
+      setStat(result.length,'PIPELINE COMPLETE \u2713');markDone(6);
+      var ps7=document.getElementById('ps7');if(ps7)ps7.classList.add('done');
+    }catch(e){
+      document.getElementById('o6h').textContent='Inflate failed: '+e.message+'\n\nTry CyberChef:\nhttps://gchq.github.io/CyberChef/#recipe=ROT13(true,true,false,13)From_Base64("A-Za-z0-9%2B/%3D",true,false)Zlib_Inflate(0,0,"Adaptive",false,false)';
+      markErr(6);
+    }
+  });
+}
+function sendToThreat(){var el=document.getElementById('o6h');var txt=el.innerText||el.textContent;if(!txt||txt==='\u2014')return;document.getElementById('threat-in').value=txt;showTab('t-threat');runThreatScan();}
+function sendToGoto(){var el=document.getElementById('o6h');var txt=el.innerText||el.textContent;if(!txt||txt==='\u2014')return;document.getElementById('goto-in').value=txt;showTab('t-goto');}
+
+// SYNTAX HIGHLIGHT
+var DANGEROUS=['eval','exec','system','passthru','shell_exec','popen','proc_open','assert'];
+var WARNING_FN=['base64_decode','base64_encode','gzinflate','gzuncompress','gzdecode','str_rot13','call_user_func','call_user_func_array'];
+var KEYWORDS=['function','if','else','elseif','while','for','foreach','return','echo','print','die','exit','isset','empty','class','new','use','namespace','include','require','include_once','require_once','global','static','public','private','protected','abstract','interface','extends','try','catch','throw','finally','switch','case','break','continue','do','list','array','true','false','null','TRUE','FALSE','NULL'];
+function syntaxHL(code){
+  var e=code.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  e=e.replace(/(\/\/[^\n]*|#[^\n]*|\/\*[\s\S]*?\*\/)/g,function(m){return '<span class="sc">'+m+'</span>';});
+  e=e.replace(/("(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*')/g,function(m){return '<span class="ss">'+m+'</span>';});
+  DANGEROUS.forEach(function(fn){e=e.replace(new RegExp('\\b('+fn+')\\s*\\(','g'),'<span class="sd">$1</span>(');});
+  WARNING_FN.forEach(function(fn){e=e.replace(new RegExp('\\b('+fn+')\\s*\\(','g'),'<span class="sw">$1</span>(');});
+  KEYWORDS.forEach(function(kw){e=e.replace(new RegExp('\\b('+kw+')\\b','g'),'<span class="sk">$1</span>');});
+  e=e.replace(/(\$[a-zA-Z_][a-zA-Z0-9_]*)/g,'<span class="sv">$1</span>');
+  e=e.replace(/\b(\d+)\b/g,'<span class="sn">$1</span>');
+  return e;
+}
+
+// GOTO RESOLVER
+function resolveGoto(){
+  var code=stripHTML(document.getElementById('goto-in').value.trim());if(!code)return;
+  var lines=code.split('\n').map(function(l){return l.trim();}).filter(function(l){return l.length>0;});
+  var labelOrder=[],blocks={},curLabel='__main__';
+  blocks[curLabel]=[];labelOrder.push(curLabel);
+  lines.forEach(function(line){
+    var lm=line.match(/^([a-zA-Z_][a-zA-Z0-9_]*)\s*:\s*(.*)/);
+    if(lm&&!/^\s*(if|while|for|function|switch|case)\b/.test(line)){
+      curLabel=lm[1];if(!blocks[curLabel]){blocks[curLabel]=[];labelOrder.push(curLabel);}
+      if(lm[2].trim())blocks[curLabel].push(lm[2].trim());
+    }else{blocks[curLabel].push(line);}
+  });
+  var visited=[],ordered=[];
+  function follow(lbl){
+    if(visited.indexOf(lbl)>=0)return;visited.push(lbl);
+    var block=blocks[lbl]||[],nextGoto=null,clean=[];
+    block.forEach(function(l){
+      var gm=l.match(/^\s*goto\s+([a-zA-Z_][a-zA-Z0-9_]*)\s*;?\s*$/);
+      if(gm)nextGoto=gm[1];else clean.push(l);
+    });
+    if(clean.length>0||lbl!=='__main__')ordered.push({label:lbl==='__main__'?null:lbl,lines:clean});
+    if(nextGoto)follow(nextGoto);
+  }
+  follow('__main__');
+  labelOrder.forEach(function(lbl){
+    if(visited.indexOf(lbl)<0&&blocks[lbl]&&blocks[lbl].length>0){
+      var hasGotoOnly=blocks[lbl].every(function(l){return/^\s*goto\s+/.test(l);});
+      if(!hasGotoOnly)ordered.push({label:lbl,lines:blocks[lbl].filter(function(l){return!/^\s*goto\s+/.test(l);})});
+    }
+  });
+  var cleanCode='';
+  ordered.forEach(function(b){if(b.lines.length>0)cleanCode+=b.lines.join('\n')+'\n';});
+  cleanCode=formatPHP(cleanCode.trim());
+  cleanCode=phpPostFix(cleanCode);
+  LOG.gotoResolved=cleanCode;
+  var codeEl=document.getElementById('goto-code');
+  codeEl.style.display='block';codeEl.innerHTML=syntaxHL(cleanCode);
+  var flowEl=document.getElementById('goto-flow');flowEl.innerHTML='<label>RESOLVED BLOCKS ('+ordered.length+')</label>';
+  ordered.forEach(function(b){
+    if(!b.lines.length)return;
+    var d=document.createElement('div');d.className='gfblock';
+    d.innerHTML='<div class="gflabel">'+(b.label?'LABEL: '+b.label:'ENTRY POINT')+'</div><pre>'+b.lines.slice(0,4).join('\n').replace(/</g,'&lt;').replace(/>/g,'&gt;')+(b.lines.length>4?'\n...':'')+'</pre>';
+    flowEl.appendChild(d);
+  });
+  setStat(cleanCode.length,'GOTO RESOLVED: '+ordered.length+' BLOCKS');
+}
+function downloadGotoAsPhp(){
+  var txt = LOG.gotoResolved || document.getElementById('goto-code').innerText;
+  if(!txt || txt==='—') return;
+  // Wrap with <?php if not already present
+  var code = txt.trim();
+  if(!/^<\?php/i.test(code)) code = '<?php\n' + code;
+  var blob = new Blob([code], {type:'text/plain'});
+  var a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'decoded_shell.php';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(a.href);
+}
+
+function sendGotoToScan(){
+  var txt=document.getElementById('goto-code').innerText||document.getElementById('goto-code').textContent;
+  if(!txt)return;document.getElementById('threat-in').value=txt;showTab('t-threat');runThreatScan();
+}
+
+// THREAT SCAN
+var THREATS=[
+  {fn:'eval',sev:'crit',desc:'Arbitrary PHP code execution. Primary webshell vector.'},
+  {fn:'exec',sev:'crit',desc:'System command execution.'},
+  {fn:'system',sev:'crit',desc:'Execute command and print output.'},
+  {fn:'passthru',sev:'crit',desc:'Execute binary and pass raw output.'},
+  {fn:'shell_exec',sev:'crit',desc:'Execute command via shell.'},
+  {fn:'popen',sev:'crit',desc:'Open a pipe to/from a command.'},
+  {fn:'proc_open',sev:'crit',desc:'Open a process with full I/O control.'},
+  {fn:'assert',sev:'crit',desc:'Can be used to eval strings as code.'},
+  {fn:'base64_decode',sev:'warn',desc:'Base64 decode — commonly used in obfuscation.'},
+  {fn:'gzinflate',sev:'warn',desc:'Decompress — typically an encoding layer.'},
+  {fn:'gzuncompress',sev:'warn',desc:'Gzip decompress.'},
+  {fn:'str_rot13',sev:'warn',desc:'ROT13 cipher — simple obfuscation technique.'},
+  {fn:'preg_replace',sev:'warn',desc:'With /e flag can execute code (PHP < 5.5).'},
+  {fn:'call_user_func',sev:'warn',desc:'Calls functions dynamically — can bypass filters.'},
+  {fn:'file_get_contents',sev:'info',desc:'Read file or external URL.'},
+  {fn:'file_put_contents',sev:'info',desc:'Write file — can create new backdoors.'},
+  {fn:'unlink',sev:'info',desc:'Delete file.'},
+  {fn:'curl_exec',sev:'info',desc:'Execute HTTP/S request.'},
+  {fn:'fsockopen',sev:'info',desc:'Open socket connection.'},
+  {fn:'phpinfo',sev:'info',desc:'Exposes PHP server configuration.'},
+  {fn:'ini_get',sev:'info',desc:'Read PHP configuration.'},
+];
+function runThreatScan(){
+  var code=document.getElementById('threat-in').value;if(!code)return;
+  var findings=[];
+  THREATS.forEach(function(t){
+    var re=new RegExp('\\b'+t.fn.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+'[\\s(\\[]?','g');
+    var count=0,m;while((m=re.exec(code))!==null)count++;
+    if(count>0)findings.push({fn:t.fn,sev:t.sev,desc:t.desc,count:count});
+  });
+  ['$_GET','$_POST','$_FILES','$_COOKIE','$_SERVER','$_REQUEST','$_SESSION'].forEach(function(sg){
+    var re=new RegExp('\\'+sg.replace('$','\\$'),'g');var count=0,m;
+    while((m=re.exec(code))!==null)count++;
+    if(count>0)findings.push({fn:sg,sev:'info',desc:'Superglobal — user/server input.',count:count});
+  });
+  LOG.threats=findings;
+  document.getElementById('tcount').textContent=findings.length+' threats';
+  document.getElementById('scan-res').style.display='block';
+  document.getElementById('threat-hl').innerHTML=syntaxHL(code);
+  var box=document.getElementById('scan-items');box.innerHTML='';
+  if(!findings.length){box.innerHTML='<div style="color:var(--accent2);font-size:11px;padding:8px">\u2713 No dangerous functions detected.</div>';return;}
+  findings.sort(function(a,b){var o={crit:0,warn:1,info:2};return(o[a.sev]||3)-(o[b.sev]||3);});
+  findings.forEach(function(f){
+    var d=document.createElement('div');d.className='si2 '+f.sev;
+    d.innerHTML='<div class="sisev '+f.sev+'">'+f.sev.toUpperCase()+'</div><div class="sibody"><div class="sifn">'+f.fn+'()</div><div class="sidesc">'+f.desc+'</div></div><div class="sicnt">x'+f.count+'</div>';
+    box.appendChild(d);
+  });
+  setStat(code.length,findings.filter(function(f){return f.sev==='crit';}).length+' CRITICAL');
+}
+
+
+// ASSEMBLE
+function pullFromLayer(srcId, dstId) {
+  // Use raw stored text from LOG to avoid syntax-highlight HTML bleeding in
+  var raw = null;
+  if (srcId === 'o2') raw = LOG.decoded.layer2;
+  else if (srcId === 'o1') raw = LOG.decoded.layer1;
+  else if (srcId === 'o4') raw = LOG.decoded.layer4;
+  if (raw) { document.getElementById(dstId).value = raw; return; }
+  // Fallback: read from DOM
+  var el = document.getElementById(srcId);
+  var txt = el.textContent || el.innerText;
+  if (txt && txt !== '\u2014') document.getElementById(dstId).value = txt;
+}
+function pullFromLayerCode(srcId, dstId) {
+  // Layer 6 final decoded output stored in LOG.decoded.final (raw, no HTML)
+  var raw = null;
+  if (srcId === 'o6h') raw = LOG.decoded.final;
+  if (raw) { document.getElementById(dstId).value = raw; return; }
+  // Fallback
+  var el = document.getElementById(srcId);
+  var txt = el.innerText || el.textContent;
+  if (txt && txt !== '\u2014') document.getElementById(dstId).value = txt;
+}
+function clearAssemble() {
+  document.getElementById('ia-l2').value = '';
+  document.getElementById('ia-l6').value = '';
+  document.getElementById('o8').innerHTML = '\u2014';
+  document.getElementById('assemble-vars').style.display = 'none';
+  document.getElementById('var-table').innerHTML = '';
+}
+
+// varLabelStore: populated by renderVarCards with label+value info
+var varLabelStore = {};
+
+function pullAllFromLayer3() {
+  var keys = Object.keys(varLabelStore);
+  if (!keys.length) {
+    alert('No variables in Layer 3 yet. Run Search in Layer 3 first.');
+    return;
+  }
+  var tbl = document.getElementById('var-table');
+  tbl.innerHTML = '';
+  document.getElementById('assemble-vars').style.display = 'block';
+  keys.forEach(function(key) {
+    var entry = varLabelStore[key];
+    var name = entry.name;
+    var val = entry.value;
+    var preview = val.length > 55 ? val.substring(0,55) + '...' : val;
+    var row = document.createElement('div');
+    row.style.cssText = 'display:flex;align-items:center;gap:8px;padding:5px 9px;background:var(--panel);border:1px solid var(--border);border-radius:4px;font-size:10.5px;';
+    row.innerHTML = '<span style="color:var(--accent);font-weight:700;flex-shrink:0;min-width:130px">' + name + '</span>'
+      + '<span style="color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1">' + preview.replace(/</g,'&lt;').replace(/>/g,'&gt;') + '</span>';
+    tbl.appendChild(row);
+  });
+  setStat(keys.length, keys.length + ' VARS PULLED FROM L3');
+}
+
+function stripHTML(str) {
+  var s = str;
+  // Remove full HTML tags first
+  s = s.replace(/<[^>]+>/g, '');
+  // Convergence loop: keep stripping until no more changes
+  // Handles deeply nested artifacts like class=class="ss">"ss">class="sk">function
+  var prev;
+  var maxIter = 10;
+  do {
+    prev = s;
+    // 1. Remove known class="xx"> patterns (quoted, with optional >)
+    s = s.replace(/class=["']?(ss|sk|sc|sd|sw|sv|sn|sf)["']?>?/g, '');
+    // 2. Remove generic class="anyvalue"> 
+    s = s.replace(/class=["'][^"'<>]{0,20}["']>?/g, '');
+    // 3. Remove bare class= followed by another class= (double nesting)
+    s = s.replace(/class=(?=class=)/g, '');
+    // 4. Remove orphaned class= at end or before non-identifier  
+    s = s.replace(/class=(?![a-zA-Z_])/g, '');
+    // 5. Remove orphaned "xx"> artifacts left after class= was stripped
+    // NOTE: require '>' so PHP string literals like "sc" are NOT stripped
+    s = s.replace(/"(ss|sk|sc|sd|sw|sv|sn|sf)">/g, '');
+    // 6. Remove any remaining dangling class= 
+    s = s.replace(/class=/g, '');
+  } while (s !== prev && --maxIter > 0);
+  // Decode HTML entities
+  s = s.replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&')
+       .replace(/&nbsp;/g, ' ').replace(/&quot;/g, '"').replace(/&#39;/g, "'");
+  return s;
+}
+
+
+function formatPHP(code) {
+  var s = code;
+
+  // 1. Join adjacent string literals: "a" . "b" -> "ab"
+  for (var i = 0; i < 6; i++) {
+    s = s.replace(/("(?:[^"\\]|\\.)*")\s*\.\s*("(?:[^"\\]|\\.)*")/g, function(m, a, b) {
+      return '"' + a.slice(1,-1) + b.slice(1,-1) + '"';
+    });
+    s = s.replace(/('(?:[^'\\]|\\.)*')\s*\.\s*('(?:[^'\\]|\\.)*')/g, function(m, a, b) {
+      return "'" + a.slice(1,-1) + b.slice(1,-1) + "'";
+    });
+  }
+
+  // 2. Mask string contents so {$var} inside strings don't get split
+  var masks = [];
+  s = s.replace(/"(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*'/g, function(m) {
+    masks.push(m);
+    return '\x00STR' + (masks.length - 1) + '\x00';
+  });
+
+  // 3. Newline after { and before }
+  s = s.replace(/\{/g, '{\n');
+  s = s.replace(/\}/g, '\n}');
+
+  // 4. Newline after ; if not already followed by newline
+  s = s.replace(/;\s*(?!\n)/g, ';\n');
+
+  // 5. Indent by brace depth
+  var lines = s.split('\n');
+  var depth = 0;
+  var out = [];
+  lines.forEach(function(line) {
+    var t = line.trim();
+    if (!t) return;
+    if (/^[})]/.test(t)) depth = Math.max(0, depth - 1);
+    out.push('    '.repeat(depth) + t);
+    if (/[{]$/.test(t) && !/^(\/\/|\/\*)/.test(t)) depth++;
+  });
+
+  var result = out.join('\n');
+
+  // 6. Restore masked strings
+  result = result.replace(/\x00STR(\d+)\x00/g, function(m, i) { return masks[parseInt(i)]; });
+
+  // 7. Goto labels on own line with blank line before
+  result = result.replace(/([;\n])\s*([A-Z][A-Za-z0-9_]{2,}):/g, function(m, pre, label) {
+    var skip = /^(goto|default|case|http|https|ftp)$/i.test(label);
+    return skip ? m : '\n\n' + label + ':';
+  });
+
+  // 8. Blank line before function declarations
+  result = result.replace(/\n(\s*function )/g, '\n\nfunction ');
+
+  // 9. Collapse 3+ blank lines
+  result = result.replace(/\n{3,}/g, '\n\n');
+
+  return result.trim();
+}
+
+// Post-process PHP output to fix common stripping artifacts
+function phpPostFix(code) {
+  var s = code;
+  // Fix: === ) → === ".") — happens when "." string gets stripped
+  s = s.replace(/===\s*\)/g, '=== ".")');
+  // Fix: ===  || → === "." ||
+  s = s.replace(/===\s*\|\|/g, '=== "." ||');
+  // Fix: ===  , → === ".",
+  s = s.replace(/===\s*,/g, '=== ".",');
+  // Fix: unclosed string quote e.g. $x = "12345; → $x = "12345";
+  s = s.replace(/"([^"\n]{1,60});(\s*\n)/g, function(m, val, trail) {
+    if (val.indexOf('"') === -1) return '"' + val + '";' + trail;
+    return m;
+  });
+  return s;
+}
+
+function assembleCode() {
+  var codeL2 = stripHTML(document.getElementById('ia-l2').value);
+  var codeL6 = stripHTML(document.getElementById('ia-l6').value);
+  if (!codeL2 && !codeL6) {
+    document.getElementById('o8').textContent = 'Empty input. Fill in Input A and/or Input B.';
+    return;
+  }
+
+  // Build name->value map from varLabelStore (from Layer 3 search results)
+  var resolvedVars = {};
+  Object.keys(varLabelStore).forEach(function(key) {
+    var entry = varLabelStore[key];
+    if (entry && entry.name && entry.value !== undefined) {
+      var name = entry.name.replace(/^\$/, '').replace(/\s.*$/, '');
+      resolvedVars[name] = entry.value;
+    }
+  });
+
+  // Also scan code for inline assignments we can pick up automatically
+  var scanCode = (codeL2 || '') + '\n' + (codeL6 || '');
+  var assignPat = /\$([a-zA-Z_][a-zA-Z0-9_]*)\s*=\s*["']([^"']{0,500}?)["']\s*[;,)]/g;
+  var m;
+  while ((m = assignPat.exec(scanCode)) !== null) {
+    if (!resolvedVars[m[1]]) resolvedVars[m[1]] = m[2];
+  }
+  // concat: $x = "a" . "b"
+  var concPat = /\$([a-zA-Z_][a-zA-Z0-9_]*)\s*=\s*((?:["'][^"']*["']\s*\.\s*)+["'][^"']*["'])\s*;/g;
+  while ((m = concPat.exec(scanCode)) !== null) {
+    if (!resolvedVars[m[1]]) {
+      var parts = m[2].match(/["']([^"']*)["']/g) || [];
+      resolvedVars[m[1]] = parts.map(function(p){ return p.replace(/^["']|["']$/g,''); }).join('');
+    }
+  }
+
+  var varNames = Object.keys(resolvedVars);
+
+  // Show var table
+  var tbl = document.getElementById('var-table');
+  tbl.innerHTML = '';
+  document.getElementById('assemble-vars').style.display = 'block';
+  varNames.forEach(function(name) {
+    var val = resolvedVars[name];
+    var preview = val.length > 55 ? val.substring(0,55) + '...' : val;
+    var row = document.createElement('div');
+    row.style.cssText = 'display:flex;align-items:center;gap:8px;padding:5px 9px;background:var(--panel);border:1px solid var(--border);border-radius:4px;font-size:10.5px;';
+    row.innerHTML = '<span style="color:var(--accent);font-weight:700;flex-shrink:0;min-width:130px">$' + name + '</span>'
+      + '<span style="color:var(--accent2);font-size:9px;flex-shrink:0">&#10003;</span>'
+      + '<span style="color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;margin-left:4px">' + preview.replace(/</g,'&lt;').replace(/>/g,'&gt;') + '</span>';
+    tbl.appendChild(row);
+  });
+
+  // Merge L2 + L6
+  var assembled = (codeL2 || '');
+  if (codeL6) assembled += '\n\n// ========== $bypass_root DECODED PAYLOAD ==========\n' + codeL6;
+
+  // PASS 1: $varname( -> realFuncName( (when value is a valid PHP identifier = function name stored in var)
+  varNames.forEach(function(name) {
+    var val = resolvedVars[name];
+    if (/^[a-zA-Z_][a-zA-Z0-9_]{1,40}$/.test(val)) {
+      assembled = assembled.replace(new RegExp('\\$' + name + '\\s*\\(', 'g'), val + '(');
+    }
+  });
+
+  // PASS 2: {$varname} template substitution
+  varNames.forEach(function(name) {
+    var val = resolvedVars[name];
+    assembled = assembled.replace(new RegExp('\\{\\$' + name + '\\}', 'g'), val);
+  });
+
+  // Reference table appended as PHP comment
+  var refBlock = '\n\n/* ==============================================\n';
+  refBlock += '   VARIABLE REFERENCE TABLE (' + varNames.length + ' vars)\n';
+  refBlock += '   ==============================================\n';
+  varNames.forEach(function(name) {
+    var val = resolvedVars[name];
+    var display = val.length > 80 ? val.substring(0,80) + '...' : val;
+    refBlock += '   $' + name + ' = ' + JSON.stringify(display) + '\n';
+  });
+  refBlock += '*/';
+  assembled += refBlock;
+
+  assembled = formatPHP(assembled);
+  assembled = phpPostFix(assembled);
+  LOG.decoded.assembled = assembled;
+  document.getElementById('o8').innerHTML = syntaxHL(assembled);
+  setStat(assembled.length, 'ASSEMBLED: ' + varNames.length + ' VARS RESOLVED');
+}
+
+function sendAssembledToThreat() {
+  var el = document.getElementById('o8');
+  var txt = el.innerText || el.textContent;
+  if (!txt || txt === '\u2014') return;
+  document.getElementById('threat-in').value = txt;
+  showTab('t-threat'); runThreatScan();
+}
+function sendAssembledToGoto() {
+  var el = document.getElementById('o8');
+  var txt = el.innerText || el.textContent;
+  if (!txt || txt === '\u2014') return;
+  document.getElementById('goto-in').value = txt;
+  showTab('t-goto');
+}
+
+
+// EXPORT
+function updateExportPreview(){
+  var d=LOG;var prev=[];
+  prev.push('Timestamp: '+new Date().toLocaleString());
+  prev.push('Detected layers: '+d.detectedLayers.length);
+  if(d.detectedLayers.length)d.detectedLayers.forEach(function(l){prev.push('  - '+l.name+' ['+l.conf+']');});
+  prev.push('Decoded layers: '+Object.keys(d.decoded).length);
+  prev.push('Threats found: '+d.threats.length);
+  if(d.threats.length){var cr=d.threats.filter(function(t){return t.sev==='crit';});prev.push('  Critical: '+cr.length+' ('+cr.map(function(t){return t.fn;}).join(', ')+')');}
+  if(d.gotoResolved)prev.push('Goto resolved: YES ('+d.gotoResolved.length+' chars)');
+  document.getElementById('exp-preview').textContent=prev.join('\n');
+}
+function exportTXT(){
+  var d=LOG;var lines=[];
+  lines.push('PHPDecoder Pro — Analysis Report');
+  lines.push('Generated: '+new Date().toLocaleString());
+  lines.push('='.repeat(60));
+  lines.push('');lines.push('DETECTED LAYERS:');
+  d.detectedLayers.forEach(function(l,i){lines.push('  '+(i+1)+'. '+l.name+' ['+l.conf+'] - '+l.desc);});
+  lines.push('');lines.push('DECODED OUTPUT:');
+  Object.keys(d.decoded).forEach(function(k){lines.push('\n['+k.toUpperCase()+']\n'+(d.decoded[k]||''));});
+  lines.push('');lines.push('GOTO RESOLVED:\n'+(d.gotoResolved||'(not run)'));
+  lines.push('');lines.push('THREAT FINDINGS ('+d.threats.length+'):');
+  d.threats.forEach(function(t){lines.push('  ['+t.sev.toUpperCase()+'] '+t.fn+' (x'+t.count+') - '+t.desc);});
+  var blob=new Blob([lines.join('\n')],{type:'text/plain'});
+  var a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='php-decoder-report-'+Date.now()+'.txt';a.click();
+}
+function exportHTML(){
+  var d=LOG;
+  var trows=d.threats.map(function(t){var c=t.sev==='crit'?'#ff2d55':t.sev==='warn'?'#ffc300':'#00c8f0';return '<tr><td style="color:'+c+';font-weight:700">'+t.sev.toUpperCase()+'</td><td>'+t.fn+'</td><td>'+t.desc+'</td><td>'+t.count+'</td></tr>';}).join('');
+  var dsec=Object.keys(d.decoded).map(function(k){return '<h3 style="color:#00c8f0;margin:14px 0 5px">'+k.toUpperCase()+'</h3><pre style="background:#0c1217;border:1px solid #1c2e3e;border-radius:4px;padding:10px;overflow:auto;max-height:280px;color:#c0dcea;font-size:11px">'+(d.decoded[k]||'').replace(/</g,'&lt;').replace(/>/g,'&gt;')+'</pre>';}).join('');
+  var html='<!DOCTYPE html><html><head><meta charset="UTF-8"><title>PHP Decoder Report</title></head><body style="background:#070b0e;color:#c0dcea;font-family:monospace;padding:24px;max-width:900px;margin:auto"><h1 style="color:#00c8f0;font-size:18px;margin-bottom:4px">PHP SHELL DECODER REPORT</h1><p style="color:#3e5a70;font-size:11px">Generated: '+new Date().toLocaleString()+'</p><hr style="border-color:#1c2e3e;margin:14px 0"><h2 style="color:#ff6b35;font-size:12px;margin-bottom:9px">DETECTED LAYERS</h2><ul>'+d.detectedLayers.map(function(l){return '<li>'+l.name+' ['+l.conf+'] &mdash; '+l.desc+'</li>';}).join('')+'</ul><h2 style="color:#ff6b35;font-size:12px;margin:14px 0 9px">DECODED OUTPUT</h2>'+dsec+'<h2 style="color:#ff6b35;font-size:12px;margin:14px 0 9px">THREATS ('+d.threats.length+')</h2><table style="width:100%;border-collapse:collapse;font-size:11px"><tr style="color:#3e5a70"><th align="left">SEV</th><th align="left">FUNCTION</th><th align="left">DESCRIPTION</th><th align="left">COUNT</th></tr>'+trows+'</table></body></html>';
+  var blob=new Blob([html],{type:'text/html'});
+  var a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='php-decoder-report-'+Date.now()+'.html';a.click();
+}
+function exportJSON(){
+  var blob=new Blob([JSON.stringify(LOG,null,2)],{type:'application/json'});
+  var a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='php-decoder-report-'+Date.now()+'.json';a.click();
+}
+</script>
+</body>
+</html>
