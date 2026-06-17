@@ -33,4 +33,4 @@ automatically without notice if you fail to comply with any term(s) of this lice
 This license shall be governed by and construed in accordance with the laws of the 
 jurisdiction in which Xyra Company is established.
 
-For permission requests or commercial licensing, contact: [Your Contact Email/Telegram]
+For permission requests or commercial licensing, contact: [Xyra77@proton.me]
